@@ -185,6 +185,27 @@ int gralloc_register_buffer(gralloc_module_t const* module,
     }
 #endif
 
+#ifndef QCOM_BSP
+    // Reset the genlock private fd flag in the handle
+    hnd->genlockPrivFd = -1;
+
+    // Check if there is a valid lock attached to the handle.
+    if (-1 == hnd->genlockHandle) {
+        ALOGE("%s: the lock is invalid.", __FUNCTION__);
+        gralloc_unmap(module, handle);
+        hnd->base = 0;
+        return -EINVAL;
+    }
+
+    // Attach the genlock handle
+    if (GENLOCK_NO_ERROR != genlock_attach_lock((native_handle_t *)handle)) {
+        ALOGE("%s: genlock_attach_lock failed", __FUNCTION__);
+        gralloc_unmap(module, handle);
+        hnd->base = 0;
+        return -EINVAL;
+    }
+#endif
+
     return 0;
 }
 

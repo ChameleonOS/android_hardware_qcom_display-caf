@@ -218,6 +218,16 @@ int gpu_context_t::alloc_impl(int w, int h, int format, int usage,
     }
 #endif
 
+#ifndef QCOM_BSP
+    // Create a genlock lock for this buffer handle.
+    err = genlock_create_lock((native_handle_t*)(*pHandle));
+    if (err) {
+        ALOGE("%s: genlock_create_lock failed", __FUNCTION__);
+        free_impl(reinterpret_cast<private_handle_t*>(pHandle));
+        return err;
+    }
+#endif
+
     *pStride = alignedw;
     return 0;
 }
