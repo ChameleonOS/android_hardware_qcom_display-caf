@@ -448,8 +448,7 @@ int  CopyBit::drawLayerUsingCopybit(hwc_context_t *dev, hwc_layer_1_t *layer,
             // copy new src and src rect crop
             src = tmp_dst;
             srcRect = tmp_rect;
-      } else
-          ALOGE("%s: alloc failed!", __FUNCTION__);
+      }
     }
     // Copybit region
     hwc_region_t region = layer->visibleRegionScreen;
@@ -516,7 +515,6 @@ int CopyBit::allocRenderBuffers(int w, int h, int f)
                                GRALLOC_USAGE_PRIVATE_IOMMU_HEAP | GRALLOC_USAGE_PRIVATE_UI_CONTIG_HEAP);
         }
         if(ret < 0) {
-            ALOGE("%s: alloc failed!", __FUNCTION__);
             freeRenderBuffers();
             break;
         }
@@ -543,11 +541,6 @@ void CopyBit::setReleaseFd(int fd) {
         close(mRelFd[0]);
     mRelFd[0] = mRelFd[1];
     mRelFd[1] = dup(fd);
-}
-
-void CopyBit::dump(android::String8& buf)
-{
-    dumpsys_log(buf, "  mCopyBitDraw=%d\n", mCopyBitDraw);
 }
 
 struct copybit_device_t* CopyBit::getCopyBitDevice() {
