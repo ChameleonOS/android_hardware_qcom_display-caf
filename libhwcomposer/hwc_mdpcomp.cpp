@@ -156,7 +156,7 @@ void MDPComp::reset(hwc_context_t *ctx,
     mCurrentFrame.count = 0;
 }
 
-bool MDPComp::isWidthValid(hwc_context_t *ctx, hwc_layer_1_t *layer) {
+bool MDPComp::isValidDimension(hwc_context_t *ctx, hwc_layer_1_t *layer) {
 
     const int dpy = HWC_DISPLAY_PRIMARY;
     private_handle_t *hnd = (private_handle_t *)layer->handle;
@@ -191,6 +191,11 @@ bool MDPComp::isWidthValid(hwc_context_t *ctx, hwc_layer_1_t *layer) {
     //FPS will not go beyond 30 if buffers on RGB pipes are of width < 5
 
     if(crop_w < 5)
+        return false;
+
+    // There is a HW limilation in MDP, minmum block size is 2x2
+    // Fallback to GPU if height is less than 2.
+    if(crop_h < 2)
         return false;
 
     return true;
@@ -298,7 +303,7 @@ bool MDPComp::isDoable(hwc_context_t *ctx,
             return false;
         }
 
-        if(!isYuvBuffer(hnd) && !isWidthValid(ctx,layer)) {
+        if(!isYuvBuffer(hnd) && !isValidDimension(ctx,layer)) {
             ALOGD_IF(isDebug(), "%s: Buffer is of invalid width",__FUNCTION__);
             return false;
         }
@@ -379,7 +384,7 @@ int MDPCompLowRes::configure(hwc_context_t *ctx, hwc_layer_1_t *layer,
             *(static_cast<MdpPipeInfoLowRes*>(pipeLayerPair.pipeInfo));
     eMdpFlags mdpFlags = OV_MDP_BACKEND_COMPOSITION;
     eZorder zOrder = static_cast<eZorder>(mdp_info.zOrder);
-    eIsFg isFg = IS_FG_OFF;
+    eIsFg isFg = (zOrder == ovutils::ZORDER_0)?IS_FG_SET:IS_FG_OFF;
     eDest dest = mdp_info.index;
 
     return configureLowRes(ctx, layer, dpy, mdpFlags, zOrder, isFg, dest,
@@ -633,7 +638,7 @@ int MDPCompHighRes::configure(hwc_context_t *ctx, hwc_layer_1_t *layer,
     MdpPipeInfoHighRes& mdp_info =
             *(static_cast<MdpPipeInfoHighRes*>(pipeLayerPair.pipeInfo));
     eZorder zOrder = static_cast<eZorder>(mdp_info.zOrder);
-    eIsFg isFg = IS_FG_OFF;
+    eIsFg isFg = (zOrder == ovutils::ZORDER_0)?IS_FG_SET:IS_FG_OFF;
     eMdpFlags mdpFlagsL = OV_MDP_BACKEND_COMPOSITION;
     eDest lDest = mdp_info.lIndex;
     eDest rDest = mdp_info.rIndex;
