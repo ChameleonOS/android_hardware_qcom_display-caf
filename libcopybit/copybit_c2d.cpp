@@ -394,17 +394,6 @@ static void unmap_gpuaddr(copybit_context_t* ctx, int mapped_idx)
     }
 }
 
-static void unmap_gpuaddr(copybit_context_t* ctx, int mapped_idx)
-{
-    if (!ctx || (mapped_idx == -1))
-        return;
-
-    if (ctx->mapped_gpu_addr[mapped_idx]) {
-        LINK_c2dUnMapAddr( (void*)ctx->mapped_gpu_addr[mapped_idx]);
-        ctx->mapped_gpu_addr[mapped_idx] = 0;
-    }
-}
-
 static int is_supported_rgb_format(int format)
 {
     switch(format) {
