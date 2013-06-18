@@ -251,9 +251,9 @@ int Overlay::initOverlay() {
             for (int j = 0; j < req.cnt; j++) {
                 ALOGD("ndx=%d num=%d z_order=%d", minfo->pndx, minfo->pnum,
                       minfo->z_order);
-                // except the RGB base layer with z_order of -1, clear any
-                // other pipes connected to mixer.
-                if((minfo->z_order) != -1) {
+                // clear any pipe connected to mixer including base pipe.
+                if (qdutils::MDPVersion::getInstance().getMDPVersion() >= qdutils::MDP_V4_2 ||
+                        (minfo->z_order) != -1) {
                     int index = minfo->pndx;
                     ALOGD("Unset overlay with index: %d at mixer %d", index, i);
                     if(ioctl(fd, MSMFB_OVERLAY_UNSET, &index) == -1) {
