@@ -525,7 +525,6 @@ int ExternalDisplay::getModeOrder(int mode)
         case HDMI_VFRMT_4096x2160p24_16_9:
             return 23; //4kx2k@24Hz
     }
-    return -1;
 }
 
 /// Returns the user mode set(if any) using adb shell

@@ -279,18 +279,6 @@ bool CopyBit::draw(hwc_context_t *ctx, hwc_display_contents_1_t *list,
         if(retVal < 0) {
             ALOGE("%s : drawLayerUsingCopybit failed", __FUNCTION__);
         }
-        retVal = drawLayerUsingCopybit(ctx, &(list->hwLayers[i]),
-                                                    renderBuffer, dpy);
-        copybitLayerCount++;
-        if(retVal < 0) {
-            ALOGE("%s : drawLayerUsingCopybit failed", __FUNCTION__);
-        }
-    }
-
-    if (copybitLayerCount) {
-        copybit_device_t *copybit = getCopyBitDevice();
-        // Async mode
-        copybit->flush_get_fence(copybit, fd);
     }
 
     if (copybitLayerCount) {
